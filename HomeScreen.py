@@ -1,19 +1,12 @@
 import cv2 
-from cvzone.HandTrackingModule import HandDetector
-# from matplotlib.pyplot import draw
 from HandTrackingModule import *
-import numpy as np
-# from HandGesturesOG import *
-# from HandGesturesDraw import *
-# from HandGesturesCameraupdate import*
 
-
+# Setup Camera
 cap = cv2.VideoCapture(0)
+
+# Hand Detector
 detector = HandDetector(detectionCon=0.8, maxHands=2)
-menu = cv2.imread("Images/MenuScreen.png")
-count = 0
-x1 = 0
-y1 = 0
+
 cv2.resizeWindow("Menu Window", 1600, 800)
 
 #This opens up a splash screen
@@ -21,10 +14,16 @@ cv2.imshow("Opening", cv2.imread("Images/OpeningScreen.png"))
 cv2.waitKey(3200)
 cv2.destroyWindow("Opening")
 
+# cv2.imshow("Opening", cv2.imread("Images/MenuScreen.png"))
+
 #this is the menu
 while True:
+    # Get Menu Image
     success, img = cap.read()
     img = cv2.flip(img, 1)
+    menu = cv2.imread("Images/MenuScreen.png")
+
+    # Find hand and landmarks
     hands, img = detector.findHands(img)  # With Draw
 
     #circles for buttons
@@ -42,7 +41,6 @@ while True:
     tipIds = [4, 8, 12, 16, 20]
 
     if hands:
-        
         lmList = hands[0]['lmList']
         length,_, img = detector.findDistance(lmList[8], lmList[12], img)
         x, y = lmList[8]
@@ -50,16 +48,16 @@ while True:
         if length < 50:
             #calculator
             if 150 <= x <= 350 and 280 <= y <= 480:
-                from HandGesturesOG import *
+                from Calculator import *
             #Draw
             elif 550 <= x <= 750 and 280 <= y <= 480:
-                from HandGesturesDraw import *
+                from Draw import *
             #Camera
             elif 950 <= x <= 1150 and 280 <= y <= 480:
-                from HandGesturesCameraupdate import *
-        
-    
-    cv2.imshow("Menu", img)
+                from Camera import *
+
+    # cv2.imshow("Menu", menu)
+    cv2.imshow("Image", img)
 
     if cv2.waitKey(5) == ord('q'):
             break
